@@ -33,3 +33,25 @@ def register_user(user: schemas.CreateUser):
     db.commit()
     db.refresh(new_user)
     return new_user
+
+# view an user by its id
+@app.get('/users/{id}', response_model=schemas.UserResponse, status_code=status.HTTP_200_OK)
+def get_user_by_id(id: int):
+    user = db.query(models.User).filter(models.User.id == id).first()
+    return user
+
+
+# update an user
+@app.post('/users/{id}', response_model=schemas.UserResponse, status_code=status.HTTP_200_OK)
+def update_user(id: int, user: schemas.UpdateUser):
+    user_to_update = db.query(models.User).filter(models.User.id == id).first()
+    user_to_update.username = user.username,
+    user_to_update.mobile_number = user.mobile_number,
+    user_to_update.password = user.password,
+    user_to_update.profile_photo = user.profile_photo,
+    user_to_update.bio = user.bio
+
+    db.commit()
+    db.refresh(user_to_update)
+    return user_to_update
+    
