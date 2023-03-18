@@ -81,12 +81,14 @@ def get_all_posts():
 def create_post(post: schemas.CreatePost):
     new_post = models.Post(
         title = post.title,
-        description = post.description 
+        description = post.description,
+        posted_by = post.posted_by
     )
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
     return new_post
+
 
 # update a post
 @app.post('/posts/update/{id}', response_model=schemas.ShowPostByUser)
@@ -111,3 +113,9 @@ def delete_an_post(id: int):
     db.commit()
     db.refresh(post_to_delete)
     return post_to_delete
+
+# show posts of a particular user
+@app.get('/posts/{id}', response_model=schemas.ShowPostByUser)
+def get_all_posts_by_user(id: int):
+    posts = db.query(models.Post).filter(models.Post.posted_by == id).first()
+    return posts
