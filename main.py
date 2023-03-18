@@ -54,4 +54,16 @@ def update_user(id: int, user: schemas.UpdateUser):
     db.commit()
     db.refresh(user_to_update)
     return user_to_update
+
+
+# delete an user
+@app.delete('/users/{id}')
+def delete_an_user(id: int):
+    user_to_delete=db.query(models.User).filter(models.User.id==id).first()
+    if user_to_delete is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User Not Found")
+    db.delete(user_to_delete)
+    db.commit()
+    db.refresh(user_to_delete)
+    return user_to_delete
     
