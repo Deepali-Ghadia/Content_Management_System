@@ -28,10 +28,8 @@ class UserResponse(BaseModel):
         
         
 class UpdateUser(BaseModel):
-    name: str
     username: str
     mobile_number: int
-    email_id: str
     password: str
     profile_photo: Optional[int] = None
     bio: Optional[str] = None
