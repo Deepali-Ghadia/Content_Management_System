@@ -1,6 +1,5 @@
 from database import Base
-from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey
-from datetime import datetime
+from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, DateTime, func
 from sqlalchemy.orm import relationship
 
 class User(Base):
@@ -8,7 +7,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), nullable=False)
     username = Column(String(50), nullable=False, unique=True)
-    mobile_number = Column(Integer, nullable=True)
+    mobile_number = Column(String(10), nullable=True)
     email_id = Column(String(50), nullable=False)
     password = Column(String(50), nullable=False)
     role = Column(String(10), nullable=True, default="author")
@@ -18,12 +17,13 @@ class User(Base):
     posts = relationship("Post", back_populates="user")
     user_medias = relationship("Media", back_populates="media_user")
     
+    
 class Post(Base):
     __tablename__ = "posts"
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=False)
-    # posted_on = Column(datetime, nullable=True, default=datetime)
+    # posted_on = Column(DateTime, default=func.now())
     is_featured = Column(Boolean, default=False)
     is_published = Column(Boolean, default=True)
     
