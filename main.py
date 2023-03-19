@@ -8,6 +8,8 @@ app = FastAPI()
 
 db=SessionLocal() 
 
+# APIS for User
+
 # view all users
 @app.get('/users', response_model=List[schemas.UserResponse], status_code=status.HTTP_200_OK)
 def get_all_users():
@@ -69,6 +71,10 @@ def delete_an_user(id: int):
     
     
     
+    
+    
+# APIs for Post
+
 # view all posts
 @app.get('/posts', response_model=List[schemas.ShowAllPost], status_code=status.HTTP_200_OK)
 def get_all_posts():
@@ -82,7 +88,8 @@ def create_post(post: schemas.CreatePost):
     new_post = models.Post(
         title = post.title,
         description = post.description,
-        posted_by = post.posted_by
+        posted_by = post.posted_by,
+        post_category = post.post_category
     )
     db.add(new_post)
     db.commit()
@@ -119,3 +126,41 @@ def delete_an_post(id: int):
 def get_all_posts_by_user(id: int):
     posts = db.query(models.Post).filter(models.Post.posted_by == id).first()
     return posts
+
+
+
+
+
+# APIs for Category
+
+# create a category
+@app.post('/category', response_model=schemas.Category)
+def create_category(category: schemas.CreateCategory):
+    new_category = models.Category(
+        name= category.name
+    )
+    db.add(new_category)
+    db.commit()
+    db.refresh(new_category)
+    return new_category
+    
+    
+# View all categories
+@app.get('/categories', response_model=List[schemas.Category])
+def get_all_categories():
+    categories = db.query(models.Category).all()
+    return categories
+
+# delete a category
+@app.delete('/categories/{id}', response_model=schemas.Category)
+def delete_a_category(id: int):
+    category_to_delete = db.query(models.Category).filter(models.Category.id == id).first()
+    if category_to_delete is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Category does not exist")
+    db.delete(category_to_delete)
+    db.commit()
+    db.refresh(category_to_delete)
+    return category_to_delete
+    
+
+    
