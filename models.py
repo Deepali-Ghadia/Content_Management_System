@@ -32,7 +32,7 @@ class Post(Base):
     media_id = Column(Integer, ForeignKey("media_files.id"))
     
     user = relationship("User", back_populates="posts")
-    category = relationship("Category", back_populates="post")
+    category = relationship("Category", back_populates="posts")
     medias = relationship("Media", back_populates="posts_medias")
     
 class Category(Base):
@@ -40,7 +40,7 @@ class Category(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), nullable=False, unique=True)
     
-    post = relationship("Post", back_populates="category")
+    posts = relationship("Post", back_populates="category")
     
     
 class Media(Base):
