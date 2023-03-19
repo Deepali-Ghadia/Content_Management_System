@@ -12,6 +12,15 @@ class ShowUser(BaseModel):
         orm_mode=True  
         
         
+class ShowCategory(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode=True  
+            
+        
+        
 class ShowPostByUser(BaseModel):
     id: int
     title: str
@@ -25,6 +34,7 @@ class ShowPostByUser(BaseModel):
         orm_mode = True
         
         
+        
 class CreateUser(BaseModel):
     name: str
     username: str
@@ -36,12 +46,15 @@ class CreateUser(BaseModel):
         orm_mode = True
     
     
+    
 class ShowPost(BaseModel):
     title: str
     description: str
     
     class Config:
         orm_mode = True
+    
+    
     
 class UserResponse(BaseModel):
     id: int
@@ -59,6 +72,7 @@ class UserResponse(BaseModel):
         orm_mode = True
         
         
+        
 class UpdateUser(BaseModel):
     username: str
     mobile_number: str
@@ -70,19 +84,18 @@ class UpdateUser(BaseModel):
         orm_mode = True
   
     
-    
+# Schemas for post  
 class CreatePost(BaseModel):
     title: str
     description: str
     posted_by: int
+    post_category: int
 
     class Config:
-        orm_mode = True
+        orm_mode = True 
     
-    
-
         
-         
+    
 class ShowAllPost(BaseModel):
     id: int
     title: str
@@ -92,11 +105,11 @@ class ShowAllPost(BaseModel):
     is_published: bool
     posted_by: int
     user: ShowUser
+    category: ShowCategory
     
     class Config:
         orm_mode = True
         
-      
 
     
 class UpdatePost(BaseModel):
@@ -107,3 +120,21 @@ class UpdatePost(BaseModel):
     
     class Config:
         orm_mode = True
+        
+        
+# Schemas for Category
+class CreateCategory(BaseModel):
+    name: str
+    
+    class Config:
+        orm_mode=True
+        
+        
+class Category(BaseModel):
+    id: int
+    name: str
+    posts: List
+    
+    class Config:
+        orm_mode=True
+        
