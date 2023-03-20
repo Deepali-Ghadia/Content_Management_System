@@ -1,5 +1,7 @@
-from fastapi import FastAPI, status, HTTPException
-from typing import List
+from fastapi import FastAPI, status, HTTPException, File, UploadFile
+import os
+import shutil
+from typing import List, Annotated
 from database import SessionLocal
 import schemas 
 import models
@@ -19,9 +21,9 @@ def get_all_users():
 # register a user
 @app.post('/users/register', response_model=schemas.UserResponse, status_code=status.HTTP_201_CREATED)
 def register_user(user: schemas.CreateUser):
-    # db_user = db.query(models.User).filter(models.User.id == user.id).first()
-    # if db_user is not None:
-    #     raise HTTPException(status_code=400, detail="User account already exists")
+    db_user = db.query(models.User).filter(models.User.name == user.name).first()
+    if db_user is not None:
+        raise HTTPException(status_code=400, detail="User account already exists")
     
     new_user = models.User(
         name= user.name,
@@ -104,6 +106,7 @@ def update_an_post(id: int, post:schemas.UpdatePost):
     post_to_update.title = post.title
     post_to_update.description = post.description
     post_to_update.is_published = post.is_published
+    post_to_update.post_category = post.category
     
     db.commit()
     db.refresh(post_to_update)
@@ -126,8 +129,6 @@ def delete_an_post(id: int):
 def get_all_posts_by_user(id: int):
     posts = db.query(models.Post).filter(models.Post.posted_by == id).first()
     return posts
-
-
 
 
 
@@ -163,4 +164,30 @@ def delete_a_category(id: int):
     return category_to_delete
     
 
+# APIs for Media Library
+
+# View all uploaded files
+@app.get('/media_files', response_model=List[schemas.ShowMediaFile])
+def show_all_media_files():
+    files = db.query(models.Media).all()
+    return files
+
+# upload a file and add it to local directory
+@app.post('/media_library', response_model=schemas.ShowMediaFile)
+def upload_file(media: schemas.UploadMediaFile, file: UploadFile = File(...)):  
     
+    upload_dir = r"E:\Shubhchintak Technology Pvt. Ltd. (Internship)\Project\Content Management System\Coding Workspace\Content Management System\uploaded_files"
+    
+    # get the destination path
+    destination_path = os.path.join(upload_dir, file.filename)
+    print(destination_path)
+    
+    # copying file contents
+    with open(destination_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    # wb means write and binary
+    
+    
+    return {"Result": "OK"}
+
+ 
