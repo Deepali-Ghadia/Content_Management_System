@@ -16,6 +16,7 @@ class User(Base):
     
     posts = relationship("Post", back_populates="user")
     user_medias = relationship("Media", back_populates="media_user")
+    user_comments = relationship("Comment", back_populates="commenter")
     
     
 class Post(Base):
@@ -34,6 +35,7 @@ class Post(Base):
     user = relationship("User", back_populates="posts")
     category = relationship("Category", back_populates="posts")
     medias = relationship("Media", back_populates="posts_medias")
+    comments = relationship("Comment", back_populates="post")
     
 class Category(Base):
     __tablename__ = "categories"
@@ -51,3 +53,16 @@ class Media(Base):
     
     posts_medias = relationship("Post", back_populates="medias")
     media_user = relationship("User", back_populates="user_medias")
+    
+    
+class Comment(Base):
+    __tablename__ = "comments"
+    id = Column(Integer, primary_key=True, index=True)
+    description = Column(Text, nullable=False)
+    
+    post_id = Column(Integer, ForeignKey("posts.id"))
+    commented_by = Column(Integer, ForeignKey("users.id"))
+    
+    post = relationship("Post", back_populates="comments")
+    commenter = relationship("User", back_populates="user_comments")
+    
