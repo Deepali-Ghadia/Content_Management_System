@@ -1,8 +1,16 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, BinaryIO
 from datetime import datetime
 
+class ShowCategory(BaseModel):
+    id: int
+    name: str
 
+    class Config:
+        orm_mode=True  
+    
+    
+    
 class ShowUser(BaseModel):
     name: str
     username: str
@@ -11,15 +19,7 @@ class ShowUser(BaseModel):
     class Config:
         orm_mode=True  
         
-        
-class ShowCategory(BaseModel):
-    id: int
-    name: str
-
-    class Config:
-        orm_mode=True  
             
-        
         
 class ShowPostByUser(BaseModel):
     id: int
@@ -33,7 +33,7 @@ class ShowPostByUser(BaseModel):
     class Config:
         orm_mode = True
         
-        
+   
         
 class CreateUser(BaseModel):
     name: str
@@ -88,7 +88,6 @@ class UpdateUser(BaseModel):
 class CreatePost(BaseModel):
     title: str
     description: str
-    posted_by: int
     post_category: int
 
     class Config:
@@ -117,10 +116,26 @@ class UpdatePost(BaseModel):
     description: str
     # posted_on: datetime
     is_published: bool
+    category: int
     
     class Config:
         orm_mode = True
-        
+ 
+ 
+class ShowPost(BaseModel):
+    id: int
+    title: str
+    description: str
+    # posted_on: datetime
+    is_featured: bool
+    is_published: bool
+    posted_by: int
+    user: ShowUser
+    category: ShowCategory
+    comments: List
+    
+    class Config:
+        orm_mode = True    
         
 # Schemas for Category
 class CreateCategory(BaseModel):
@@ -137,4 +152,55 @@ class Category(BaseModel):
     
     class Config:
         orm_mode=True
+   
+   
+     
+# Upload File
+class UploadMediaFile(BaseModel):
+    link: str
+    
+
+    
+class ShowMediaFile(BaseModel):
+    id: int
+    link: str
+    
+    class Config:
+        orm_mode=True
         
+
+
+# Schema for adding comments
+class AddComment(BaseModel):
+    description: str
+    commented_by: int
+    
+    class Config:
+        orm_mode=True
+        
+        
+class ShowComment(BaseModel):
+    id: int
+    post_id : int
+    description: str
+    commenter: ShowUser
+    
+    class Config:
+        orm_mode=True
+        
+        
+        
+class ShowFeaturedPosts(BaseModel):
+    id: int
+    title: str
+    description: str
+    # posted_on: datetime
+    is_featured: bool
+    # is_published: bool
+    # posted_by: int
+    user: ShowUser
+    category: ShowCategory
+    # comments: List
+    
+    class Config:
+        orm_mode = True 
