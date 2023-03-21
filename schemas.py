@@ -204,3 +204,12 @@ class ShowFeaturedPosts(BaseModel):
     
     class Config:
         orm_mode = True 
+        
+        
+        
+class ListCategory(BaseModel):
+    id: int
+    name: str
+    
+    class Config:
+        orm_mode = True
