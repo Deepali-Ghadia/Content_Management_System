@@ -155,11 +155,18 @@ def create_category(category: schemas.CreateCategory):
     return new_category
     
     
-# View all categories
+# View all categories along with posts
 @app.get('/categories', response_model=List[schemas.Category])
-def get_all_categories():
+def get_categorieswith_posts():
     categories = db.query(models.Category).all()
     return categories
+
+
+# list all categories
+@app.get('/categories_list/', response_model=List[schemas.ListCategory])
+def get_list_of_categories():
+    list_of_categories = db.query(models.Category).all()
+    return list_of_categories 
 
 # delete a category
 @app.delete('/categories/{id}', response_model=schemas.Category)
@@ -264,6 +271,3 @@ def list_all_featured_posts(value: bool):
 
 
 
-# Implementing Search Functionality
-# get all posts of a particular category
-@app.get('/posts/{category}', response_model=List[])
