@@ -85,12 +85,12 @@ def get_all_posts():
 
 
 # create a post 
-@app.post('/posts', response_model=schemas.ShowAllPost, status_code=status.HTTP_201_CREATED)
-def create_post(post: schemas.CreatePost):
+@app.post('/posts/user/{id}', response_model=schemas.ShowAllPost, status_code=status.HTTP_201_CREATED)
+def create_post(post: schemas.CreatePost, id:int):
     new_post = models.Post(
         title = post.title,
         description = post.description,
-        posted_by = post.posted_by,
+        posted_by = id,
         post_category = post.post_category
     )
     db.add(new_post)
@@ -124,11 +124,20 @@ def delete_an_post(id: int):
     db.refresh(post_to_delete)
     return post_to_delete
 
+
 # show posts of a particular user
-@app.get('/posts/{id}', response_model=schemas.ShowPostByUser)
+@app.get('/user/posts/{id}', response_model=schemas.ShowPostByUser)
 def get_all_posts_by_user(id: int):
-    posts = db.query(models.Post).filter(models.Post.posted_by == id).first()
+    posts = db.query(models.Post).filter(models.Post.posted_by == id).all()
     return posts
+
+
+
+# show post by a particular ID
+@app.get('/posts/{id}', response_model=schemas.ShowPost)
+def view_post_by_id(id: int):
+    post_by_id = db.query(models.Post).filter(models.Post.id == id).first()
+    return post_by_id
 
 
 
@@ -174,7 +183,7 @@ def show_all_media_files():
 
 # upload a file and add it to local directory
 @app.post('/media_library', response_model=schemas.ShowMediaFile)
-def upload_file(media: schemas.UploadMediaFile, file: UploadFile = File(...)):  
+def upload_file(file: UploadFile = File(...)):  
     
     upload_dir = r"E:\Shubhchintak Technology Pvt. Ltd. (Internship)\Project\Content Management System\Coding Workspace\Content Management System\uploaded_files"
     
@@ -187,7 +196,74 @@ def upload_file(media: schemas.UploadMediaFile, file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, buffer)
     # wb means write and binary
     
+    # adding the locally stored file to the database
+    db_file = db.query(models.Media).filter(models.Media.link == file.filename).first()
+    if db_file is not None:
+        raise HTTPException(status_code=400, detail="Media File already exists")
+    
+    print(file.filename)
+    new_media = models.Media(
+        link = file.filename
+    )
+
+    db.add(new_media)
+    db.commit()
+    db.refresh(new_media)
     
     return {"Result": "OK"}
 
  
+#  APIs for Adding Comments
+# add comment to a particular post
+@app.post('/comments/{id}', response_model=schemas.ShowComment)
+def add_comment(id: int, comment: schemas.AddComment):
+    validate = db.query(models.Post).filter(models.Post.id == id).first()
+    if validate is not None: 
+        new_comment = models.Comment(
+            post_id = validate.id,
+            description =  comment.description,
+            commented_by = comment.commented_by
+        )
+    db.add(new_comment)
+    db.commit()
+    db.refresh(new_comment)
+    return new_comment
+
+
+# delete a comment by id
+@app.delete('/delete_comments/{id}')
+def delete_comment_by_id(id: int):
+    comment_to_delete = db.query(models.Comment).filter(models.Comment.id == id).first()
+    if comment_to_delete is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment does not exist")
+    db.delete(comment_to_delete)
+    db.commit()
+    db.refresh(comment_to_delete)
+    return comment_to_delete
+    
+
+
+# API to mark a post as featured post
+@app.post('/admin/posts/{id}', response_model=schemas.ShowAllPost)
+def mark_featured(id: int):
+    to_mark = db.query(models.Post).filter(models.Post.id == id).first()
+    if to_mark.is_featured == False:
+        to_mark.is_featured = True
+
+    db.commit()
+    db.refresh(to_mark)
+    return to_mark
+
+
+
+# show all featured posts
+@app.get('/posts/is_featured/{value}', response_model=List[schemas.ShowFeaturedPosts])
+def list_all_featured_posts(value: bool):
+    featured_posts = db.query(models.Post).filter(models.Post.is_featured==value).all()
+    return featured_posts
+
+
+
+# Implementing Search Functionality
+# get all posts of a particular category
+@app.get('/posts/{category}', response_model=List[])
