@@ -213,3 +213,13 @@ class ListCategory(BaseModel):
     
     class Config:
         orm_mode = True
+        
+        
+        
+class PostsByCategory(BaseModel):
+    id: int
+    name: str
+    posts: List
+    
+    class Config:
+        orm_mode = True
