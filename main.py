@@ -276,7 +276,8 @@ def list_all_featured_posts(value: bool):
 
 # APIs to implement search functionality
 # API to get all the posts of a particular category
-@app.get('/posts/search/{category_id}', response_model=schemas.PostsByCategory)
+@app.get('/posts/search/{category_id}', response_model=schemas.SearchByCategory)
 def search_by_category(category_id : int):
     posts_of_a_category  = db.query(models.Category).filter(models.Category.id == category_id).first()
     return posts_of_a_category
+
