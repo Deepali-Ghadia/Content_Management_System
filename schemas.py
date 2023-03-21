@@ -216,7 +216,7 @@ class ListCategory(BaseModel):
         
         
         
-class PostsByCategory(BaseModel):
+class SearchByCategory(BaseModel):
     id: int
     name: str
     posts: List
