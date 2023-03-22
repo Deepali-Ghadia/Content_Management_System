@@ -281,3 +281,14 @@ def search_by_category(category_id : int):
     posts_of_a_category  = db.query(models.Category).filter(models.Category.id == category_id).first()
     return posts_of_a_category
 
+
+
+# API to change user roles and permissions
+@app.post('/admin/user_roles/{id}', response_model=schemas.UserResponse)
+def change_user_role(id: int, user: schemas.ChangeRole):
+    user_details = db.query(models.User).filter(models.User.id == id).first()
+    user_details.role = user.role
+    
+    db.commit()
+    db.refresh(user_details)
+    return user_details
