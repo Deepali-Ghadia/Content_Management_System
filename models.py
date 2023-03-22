@@ -9,8 +9,8 @@ class User(Base):
     username = Column(String(50), nullable=False, unique=True)
     mobile_number = Column(String(10), nullable=True)
     email_id = Column(String(50), nullable=False)
-    password = Column(String(50), nullable=False)
-    role = Column(String(10), nullable=True, default="author")
+    password = Column(String(255), nullable=False)
+    role = Column(String(50), nullable=True, default="author")
     profile_photo = Column(Integer, nullable=True)
     bio = Column(Text, nullable=True)
     
