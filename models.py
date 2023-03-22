@@ -59,6 +59,7 @@ class Comment(Base):
     __tablename__ = "comments"
     id = Column(Integer, primary_key=True, index=True)
     description = Column(Text, nullable=False)
+    is_approved = Column(Boolean, default=False)
     
     post_id = Column(Integer, ForeignKey("posts.id"))
     commented_by = Column(Integer, ForeignKey("users.id"))
