@@ -1,4 +1,5 @@
 from fastapi import FastAPI, status, HTTPException, File, UploadFile
+from passlib.context import CryptContext 
 import os
 import shutil
 from typing import List, Annotated
@@ -9,6 +10,9 @@ import models
 app = FastAPI()
 
 db=SessionLocal() 
+
+password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 # APIS for User
 
@@ -25,12 +29,14 @@ def register_user(user: schemas.CreateUser):
     if db_user is not None:
         raise HTTPException(status_code=400, detail="User account already exists")
     
+    hashed_password = password_context.hash(user.password)
+    
     new_user = models.User(
         name= user.name,
         username= user.username,
         mobile_number= user.mobile_number,
         email_id= user.email_id,
-        password= user.password
+        password= hashed_password
     )
 
     db.add(new_user)
