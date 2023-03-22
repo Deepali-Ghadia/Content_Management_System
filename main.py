@@ -37,6 +37,7 @@ def register_user(user: schemas.CreateUser):
         mobile_number= user.mobile_number,
         email_id= user.email_id,
         password= hashed_password
+        # alternative to this statement
     )
 
     db.add(new_user)
@@ -54,10 +55,13 @@ def get_user_by_id(id: int):
 # update an user
 @app.post('/users/{id}', response_model=schemas.UserResponse, status_code=status.HTTP_200_OK)
 def update_user(id: int, user: schemas.UpdateUser):
+    
+    hashed_password = password_context.hash(user.password)
+    
     user_to_update = db.query(models.User).filter(models.User.id == id).first()
     user_to_update.username = user.username,
     user_to_update.mobile_number = user.mobile_number,
-    user_to_update.password = user.password,
+    user_to_update.password = hashed_password,
     user_to_update.profile_photo = user.profile_photo,
     user_to_update.bio = user.bio
 
