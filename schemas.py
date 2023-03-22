@@ -62,7 +62,6 @@ class UserResponse(BaseModel):
     username: str
     mobile_number: str
     email_id: str
-    password: str
     role: str
     posts: List
     profile_photo: Optional[int] = None
@@ -223,3 +222,7 @@ class SearchByCategory(BaseModel):
     
     class Config:
         orm_mode = True
+        
+        
+class ChangeRole(BaseModel):
+    role: str
