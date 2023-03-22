@@ -66,6 +66,7 @@ class UserResponse(BaseModel):
     posts: List
     profile_photo: Optional[int] = None
     bio: Optional[str] = None
+    password: str
     
     class Config:
         orm_mode = True
