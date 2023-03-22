@@ -126,7 +126,7 @@ def delete_an_post(id: int):
 
 
 # show posts of a particular user
-@app.get('/user/posts/{id}', response_model=schemas.ShowPostByUser)
+@app.get('/user/posts/{id}', response_model=List[schemas.ShowPostByUser])
 def get_all_posts_by_user(id: int):
     posts = db.query(models.Post).filter(models.Post.posted_by == id).all()
     return posts
@@ -206,19 +206,19 @@ def upload_file(file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, buffer)
     # wb means write and binary
     
-    # adding the locally stored file to the database
-    db_file = db.query(models.Media).filter(models.Media.link == file.filename).first()
-    if db_file is not None:
-        raise HTTPException(status_code=400, detail="Media File already exists")
+    # # adding the locally stored file to the database
+    # db_file = db.query(models.Media).filter(models.Media.link == file.filename).first()
+    # if db_file is not None:
+    #     raise HTTPException(status_code=400, detail="Media File already exists")
     
-    print(file.filename)
-    new_media = models.Media(
-        link = file.filename
-    )
+    # print(file.filename)
+    # new_media = models.Media(
+    #     link = file.filename
+    # )
 
-    db.add(new_media)
-    db.commit()
-    db.refresh(new_media)
+    # db.add(new_media)
+    # db.commit()
+    # db.refresh(new_media)
     
     return {"Result": "OK"}
 
@@ -292,3 +292,11 @@ def change_user_role(id: int, user: schemas.ChangeRole):
     db.commit()
     db.refresh(user_details)
     return user_details
+
+
+
+# # Trial: show approved comments
+# @app.get('/comments/{post_id}', response_model=List[schemas.ShowComment], status_code=status.HTTP_200_OK)
+# def get_all_comments_on_a_post(post_id:int):
+#     comments=db.query(models.Comment).filter(models.Comment.post_id==post_id).all()
+#     return comments
