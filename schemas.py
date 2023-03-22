@@ -29,7 +29,7 @@ class ShowPostByUser(BaseModel):
     is_featured: bool
     is_published: bool
     user: ShowUser # this is the relationship wala variable
- 
+    
     class Config:
         orm_mode = True
         
@@ -88,6 +88,7 @@ class CreatePost(BaseModel):
     title: str
     description: str
     post_category: int
+    media_id: Optional[int]= None
 
     class Config:
         orm_mode = True 
@@ -104,6 +105,7 @@ class ShowAllPost(BaseModel):
     posted_by: int
     user: ShowUser
     category: ShowCategory
+    media_id: Optional[int]= None
     
     class Config:
         orm_mode = True
@@ -116,6 +118,7 @@ class UpdatePost(BaseModel):
     # posted_on: datetime
     is_published: bool
     category: int
+    media_id: Optional[int]= None
     
     class Config:
         orm_mode = True
@@ -132,6 +135,7 @@ class ShowPost(BaseModel):
     user: ShowUser
     category: ShowCategory
     comments: List
+    media_id: Optional[int]= None
     
     class Config:
         orm_mode = True    
@@ -183,6 +187,7 @@ class ShowComment(BaseModel):
     post_id : int
     description: str
     commenter: ShowUser
+    is_approved: bool
     
     class Config:
         orm_mode=True
@@ -199,6 +204,7 @@ class ShowFeaturedPosts(BaseModel):
     # posted_by: int
     user: ShowUser
     category: ShowCategory
+    # media_id: Optional[int]= None
     # comments: List
     
     class Config:
