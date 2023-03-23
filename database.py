@@ -9,3 +9,4 @@ engine = create_engine('postgresql://postgres:admin@localhost/content_management
 Base = declarative_base()
 
 SessionLocal = sessionmaker(bind=engine)
+db=SessionLocal()
