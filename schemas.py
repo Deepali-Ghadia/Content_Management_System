@@ -233,3 +233,14 @@ class SearchByCategory(BaseModel):
         
 class ChangeRole(BaseModel):
     role: str
+    
+    class Config:
+        orm_mode = True
+    
+    
+class Login(BaseModel):
+    username: str
+    password: str
+    
+    class Config:
+        orm_mode = True
