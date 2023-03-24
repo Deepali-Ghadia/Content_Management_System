@@ -80,7 +80,7 @@ def get_all_my_posts(id:int = Depends(get_current_user) ):
 @router.get('/user/{id}', response_model=List[schemas.ShowPostByUser], tags=['Posts'])
 def get_all_posts_of_a_user(id: int, random :int = Depends(get_current_user) ):
     if random is not None:
-        posts = db.query(models.Post).filter(models.Post.posted_by == id).all()
+        posts = db.query(models.Post).filter((models.Post.posted_by == id) & (models.Post.is_published==True)).all()
         return posts
 
 
