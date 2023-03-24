@@ -8,15 +8,16 @@ from routers.authentication import get_current_user
 
 router = APIRouter(prefix="/admin", tags=["Admin"])  
     
-        
+def validate_admin(current: int = Depends(get_current_user)):
+    current_user = db.query(models.User).filter(models.User.id == current).first()    
+    return current_user.role
+
 
 # API to mark a post as featured post
 @router.post('/posts/mark_featured/{id}', response_model=schemas.ShowAllPost)
-def mark_featured(id: int, current: int = Depends(get_current_user)):
-    current_user = db.query(models.User).filter(models.User.id == current).first()
-    print(current_user.role)
+def mark_featured(id: int, is_admin: str = Depends(validate_admin)):
     
-    to_mark = db.query(models.Post).filter((models.Post.id == id) & (current_user.role=="admin")).first()
+    to_mark = db.query(models.Post).filter((models.Post.id == id) & (is_admin=="admin")).first()
     if to_mark is not None:
         if to_mark.is_featured == False:
             to_mark.is_featured = True
