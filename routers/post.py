@@ -69,11 +69,19 @@ def delete_an_post(id: int, user_id:int = Depends(get_current_user)):
 
 
 
-# show posts of a particular user
+# show all my posts
 @router.get('/user', response_model=List[schemas.ShowPostByUser], tags=['Posts'])
-def get_all_posts_by_user(id:int = Depends(get_current_user) ):
+def get_all_my_posts(id:int = Depends(get_current_user) ):
     posts = db.query(models.Post).filter(models.Post.posted_by == id).all()
     return posts
+
+
+# get list of posts of a particular user
+@router.get('/user/{id}', response_model=List[schemas.ShowPostByUser], tags=['Posts'])
+def get_all_posts_of_a_user(id: int, random :int = Depends(get_current_user) ):
+    if random is not None:
+        posts = db.query(models.Post).filter(models.Post.posted_by == id).all()
+        return posts
 
 
 
