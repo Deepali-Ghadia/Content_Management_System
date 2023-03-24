@@ -52,7 +52,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
     
 
-@router.post('/login')
+@router.post('/login', tags=["Login"])
 def login(login: OAuth2PasswordRequestForm = Depends()):
     user = db.query(models.User).filter(models.User.username == login.username).first()
     if user is None:
