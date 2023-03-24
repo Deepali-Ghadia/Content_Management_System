@@ -36,7 +36,7 @@ def delete_comment_by_id(id: int, user_id:int = Depends(get_current_user)):
     comment_to_delete = db.query(models.Comment).filter((models.Comment.id == id) & (models.User.id == user_id)).first()
     
     if comment_to_delete is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Either the comment odes not exist or you are not allowed to delete this comment")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Either the comment does not exist or you are not allowed to delete this comment")
     
     db.delete(comment_to_delete)
     db.commit()
