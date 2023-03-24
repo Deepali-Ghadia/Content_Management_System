@@ -15,7 +15,7 @@ router = APIRouter(prefix="/posts")
 @router.get('/all', response_model=List[schemas.ShowAllPost], status_code=status.HTTP_200_OK, tags=['Posts'])
 def get_all_posts(random: int = Depends(get_current_user) ):
     if random is not None:
-        posts = db.query(models.Post).all()
+        posts = db.query(models.Post).filter(models.Post.is_published==True).all()
         return posts
 
 
