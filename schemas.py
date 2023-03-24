@@ -76,7 +76,6 @@ class UserResponse(BaseModel):
 class UpdateUser(BaseModel):
     username: str
     mobile_number: str
-    password: str
     profile_photo: Optional[int] = None
     bio: Optional[str] = None
     
