@@ -176,7 +176,7 @@ class ShowMediaFile(BaseModel):
 # Schema for adding comments
 class AddComment(BaseModel):
     description: str
-    commented_by: int
+
     
     class Config:
         orm_mode=True
