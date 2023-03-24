@@ -1,19 +1,27 @@
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, status, HTTPException, Depends
 from database import db
 from passlib.context import CryptContext
 from typing import List
 import schemas, models
+from routers.authentication import get_current_user
 
 
-router = APIRouter(prefix="/admin", tags=["Admin"])
-
+router = APIRouter(prefix="/admin", tags=["Admin"])  
+    
+        
 
 # API to mark a post as featured post
 @router.post('/posts/mark_featured/{id}', response_model=schemas.ShowAllPost)
-def mark_featured(id: int):
-    to_mark = db.query(models.Post).filter(models.Post.id == id).first()
-    if to_mark.is_featured == False:
-        to_mark.is_featured = True
+def mark_featured(id: int, current: int = Depends(get_current_user)):
+    current_user = db.query(models.User).filter(models.User.id == current).first()
+    print(current_user.role)
+    
+    to_mark = db.query(models.Post).filter((models.Post.id == id) & (current_user.role=="admin")).first()
+    if to_mark is not None:
+        if to_mark.is_featured == False:
+            to_mark.is_featured = True
+    else:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You don't have authority to update role of any user")
 
     db.commit()
     db.refresh(to_mark)
