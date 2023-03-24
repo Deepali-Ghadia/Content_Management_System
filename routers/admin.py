@@ -5,11 +5,11 @@ from typing import List
 import schemas, models
 
 
-router = APIRouter()
+router = APIRouter(prefix="/admin", tags=["Admin"])
 
 
 # API to mark a post as featured post
-@router.post('/admin/posts/{id}', response_model=schemas.ShowAllPost)
+@router.post('/posts/mark_featured/{id}', response_model=schemas.ShowAllPost)
 def mark_featured(id: int):
     to_mark = db.query(models.Post).filter(models.Post.id == id).first()
     if to_mark.is_featured == False:
@@ -22,14 +22,14 @@ def mark_featured(id: int):
 
 
 # show all featured posts
-@router.get('/posts/is_featured/{value}', response_model=List[schemas.ShowFeaturedPosts])
+@router.get('/posts/show_featured/{value}', response_model=List[schemas.ShowFeaturedPosts])
 def list_all_featured_posts(value: bool):
     featured_posts = db.query(models.Post).filter(models.Post.is_featured==value).all()
     return featured_posts
 
 
 # API to change user roles and permissions
-@router.post('/admin/user_roles/{id}', response_model=schemas.UserResponse)
+@router.post('/update_user_role/{id}', response_model=schemas.UserResponse)
 def change_user_role(id: int, user: schemas.ChangeRole):
     user_details = db.query(models.User).filter(models.User.id == id).first()
     user_details.role = user.role
