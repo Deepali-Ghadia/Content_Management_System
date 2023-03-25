@@ -28,14 +28,10 @@ def verify_the_generated_token(token:str):
         email: str = payload.get("sub")
         if email is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect Email Address")
-        token_data = schemas.ResetPassword(email=email)
+        # token_data = schemas.ResetPassword(email=email)
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect Email Address") 
 
-    user = db.query(models.User).filter(models.User.email_id==email).first()
-    if not user:
-        raise HTTPException(detail="Invalid Token")
-    
     return email
 
 
@@ -50,30 +46,32 @@ def request_reset_password(email: schemas.ResetPassword):
 
     # generate access token
     reset_token = create_access_token(data ={"sub": user.email_id})
-
+    print(reset_token)
 
     # send email with password reset link
     smtp_server = smtplib.SMTP('smtp.gmail.com', 587)
     smtp_server.starttls()
     smtp_server.login('deepali.ghadia.stpl.2023@gmail.com', 'xbzwjqzdxexjznjn')
-    message = f'Subject: Password Reset\n\nClick this link to reset your password: https://example.com/reset-password?token={reset_token}'
+    message = f'Subject: Password Reset\n\nClick this link to reset your password: http://localhost:8000/reset-password/?token={reset_token}'
     smtp_server.sendmail('your_email', email.email_id, message)
     smtp_server.quit()
 
-    print("Password reset email sent on {email.email_id}")
+    print("Password reset email sent ✅✅")
 
     return user.email_id
 
 
 
-@router.post("/reset-password/{token}")
+@router.put("/reset-password/{token}")
 def reset_password(token: str, update_details: schemas.UpdatePassword, to_validate: str = Depends(request_reset_password)):
+    # print(to_validate)
     
     # verify the access token
     email_from_token = verify_the_generated_token(token)
     
     if email_from_token != to_validate:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Token")
+
 
 
     updated_hashed_password = password_context.hash(update_details.password)
@@ -83,5 +81,5 @@ def reset_password(token: str, update_details: schemas.UpdatePassword, to_valida
     
     db.commit()
     db.refresh(user)
-   
+
     return {"message": "Password reset is successful"}
