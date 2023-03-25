@@ -35,18 +35,29 @@ def verify_the_generated_token(token:str):
     return email
 
 
-# API for reset password
-
-@router.post("/reset-password")
-def request_reset_password(email: schemas.ResetPassword):
-    user = db.query(models.User).filter(models.User.email_id == email.email_id).first()
+# function to get email of the user that has requested for password reset
+def get_user_email(email):
+    user = db.query(models.User).filter(models.User.email_id == email).first()
     if not user:
         return {"message": "User not found"}
+    
+    else:
+        return user.email_id
 
 
+
+
+@router.post('/reset/send_request')
+def send_reset_request(email: schemas.ResetPassword):
+    
+    # get user email
+    user_email = get_user_email(email.email_id)
+    print(user_email)
+    
     # generate access token
-    reset_token = create_access_token(data ={"sub": user.email_id})
+    reset_token = create_access_token(data ={"sub": user_email})
     print(reset_token)
+
 
     # send email with password reset link
     smtp_server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -56,14 +67,16 @@ def request_reset_password(email: schemas.ResetPassword):
     smtp_server.sendmail('your_email', email.email_id, message)
     smtp_server.quit()
 
-    print("Password reset email sent ✅✅")
-
-    return user.email_id
+    print()
+    
+    return {"message": "Password reset email sent ✅✅"}
+    
+    
 
 
 
 @router.put("/reset-password/{token}")
-def reset_password(token: str, update_details: schemas.UpdatePassword, to_validate: str = Depends(request_reset_password)):
+def reset_password(token: str, update_details: schemas.UpdatePassword, to_validate: str = Depends(get_user_email)):
     # print(to_validate)
     
     # verify the access token
@@ -71,8 +84,6 @@ def reset_password(token: str, update_details: schemas.UpdatePassword, to_valida
     
     if email_from_token != to_validate:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Token")
-
-
 
     updated_hashed_password = password_context.hash(update_details.password)
     
