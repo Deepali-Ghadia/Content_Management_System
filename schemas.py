@@ -250,5 +250,18 @@ class TokenData(BaseModel):
     
     class Config:
         orm_mode = True
+  
         
         
+class ResetPassword(BaseModel):
+    email_id: str
+    
+    class Config:
+        orm_mode = True
+        
+        
+class UpdatePassword(BaseModel):
+    password: str
+    
+    class Config:
+        orm_mode = True
