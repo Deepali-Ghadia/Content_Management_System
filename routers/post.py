@@ -19,15 +19,23 @@ def get_all_posts(random: int = Depends(get_current_user) ):
         return posts
 
 
+
 # create a post 
 @router.post('/create/', response_model=schemas.ShowAllPost, status_code=status.HTTP_201_CREATED,tags=['Posts'])
 # the ID returned by get_current_user is mapped with the id in the argument
 def create_post( post: schemas.CreatePost, id:int = Depends(get_current_user) ):
+    
+    # media_owner = db.query(models.Media).filter(models.Media.user == id).first()
+    # if media_owner is None:
+    #     return {"message": "This media file does not belong to you ❌❌"}
+        
+    # else:  
     new_post = models.Post(
         title = post.title,
         description = post.description,
         posted_by = id,
-        post_category = post.post_category
+        post_category = post.post_category,
+        media_id = post.media_id
     )
     db.add(new_post)
     db.commit()
@@ -47,6 +55,7 @@ def update_an_post(post:schemas.UpdatePost, id: int, user_id:int = Depends(get_c
     post_to_update.description = post.description
     post_to_update.is_published = post.is_published
     post_to_update.post_category = post.category
+    post_to_update.media_id = post.media_id
     
     db.commit()
     db.refresh(post_to_update)
