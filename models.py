@@ -11,11 +11,13 @@ class User(Base):
     email_id = Column(String(50), nullable=False)
     password = Column(String(255), nullable=False)
     role = Column(String(50), nullable=True, default="author")
-    profile_photo = Column(Integer, nullable=True)
     bio = Column(Text, nullable=True)
     
+    profile_photo = Column(Integer, ForeignKey("media_files.id"))
+    profile = relationship("Media", foreign_keys=[profile_photo])
+    
     posts = relationship("Post", back_populates="user")
-    user_medias = relationship("Media", back_populates="media_user")
+    # user_medias = relationship("Media", back_populates="media_user")
     user_comments = relationship("Comment", back_populates="commenter")
     
     
@@ -52,8 +54,9 @@ class Media(Base):
     link = Column(String(255), nullable=False)
     
     posts_medias = relationship("Post", back_populates="medias")
-    media_user = relationship("User", back_populates="user_medias")
-    
+    # media_user = relationship("User", back_populates="user_medias")
+
+    owner = relationship("User", foreign_keys=[user], backref="media_files")
     
 class Comment(Base):
     __tablename__ = "comments"
