@@ -30,7 +30,7 @@ def get_user_by_id(id: int, random: int = Depends(get_current_user)):
 @router.post('/update/', response_model=schemas.UserResponse, status_code=status.HTTP_200_OK)
 def update_user(user: schemas.UpdateUser, user_id: int = Depends(get_current_user)):
 
-    
+
     user_to_update = db.query(models.User).filter(models.User.id == user_id).first()
     user_to_update.username = user.username,
     user_to_update.mobile_number = user.mobile_number,
