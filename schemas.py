@@ -39,7 +39,7 @@ class ShowPostByUser(BaseModel):
     is_published: bool
     user: ShowUser # this is the relationship wala variable
     media_id: int
-    medias: List
+    medias: ShowMediaFile
     
     class Config:
         orm_mode = True
