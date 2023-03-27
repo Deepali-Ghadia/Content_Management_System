@@ -20,7 +20,16 @@ class ShowUser(BaseModel):
         orm_mode=True  
         
             
-        
+  
+class ShowMediaFile(BaseModel):
+    id: int
+    link: str
+    user: int
+    
+    class Config:
+        orm_mode=True
+  
+          
 class ShowPostByUser(BaseModel):
     id: int
     title: str
@@ -29,6 +38,8 @@ class ShowPostByUser(BaseModel):
     is_featured: bool
     is_published: bool
     user: ShowUser # this is the relationship wala variable
+    media_id: int
+    medias: List
     
     class Config:
         orm_mode = True
@@ -161,15 +172,11 @@ class Category(BaseModel):
 # Upload File
 class UploadMediaFile(BaseModel):
     link: str
-    
-
-    
-class ShowMediaFile(BaseModel):
-    id: int
-    link: str
+    user: int
     
     class Config:
         orm_mode=True
+    
         
 
 
