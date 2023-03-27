@@ -14,18 +14,18 @@ router = APIRouter(prefix="/comments",
 # add comment to a particular post
 @router.post('/add_comment/{id}', response_model=schemas.ShowComment)
 def add_comment(id: int, comment: schemas.AddComment, user_id: int = Depends(get_current_user)):
-    if user_id is not None:
-        validate = db.query(models.Post).filter((models.Post.id == id)).first()
-        if validate is not None: 
-            new_comment = models.Comment(
-                post_id = validate.id,
-                description =  comment.description,
-                commented_by = user_id
-            )
-        db.add(new_comment)
-        db.commit()
-        db.refresh(new_comment)
-        return new_comment
+
+    validate = db.query(models.Post).filter((models.Post.id == id)).first()
+    if validate is not None: 
+        new_comment = models.Comment(
+            post_id = validate.id,
+            description =  comment.description,
+            commented_by = user_id
+        )
+    db.add(new_comment)
+    db.commit()
+    db.refresh(new_comment)
+    return new_comment
 
 
 
