@@ -45,17 +45,36 @@ def update_user(user: schemas.UpdateUser, user_id: int = Depends(get_current_use
 
 # delete an user
 @router.delete('/delete/')
-def delete_an_user(id: int = Depends(get_current_user)):
-    user_to_delete=db.query(models.User).filter(models.User.id==id).first()
+def delete_an_user(user_id: int = Depends(get_current_user)):
     
-    # if user_to_delete is None:
-    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User Not Found")
+    # delete all my posts and comments made by all the users on my post
+    posts_of_a_user = db.query(models.Post).filter(models.Post.posted_by == user_id).all()
+    # print(posts_of_a_user) # prints a list of all the posts made by a user
+    # print(posts_of_a_user[0]) #prints the first post from the list
+    # print(posts_of_a_user[0].id) #prints the id of first post
+    # print("comments are ........\n")
+    # print(posts_of_a_user[0].comments) # prints list of comments
+ 
+    for i in range(len(posts_of_a_user)):
+        for j in range(len(posts_of_a_user[i].comments)):
+            db.delete(posts_of_a_user[i].comments[j])
+        db.delete(posts_of_a_user[i])
+
+    print("Deleted all the posts along with comments")
+    
+    
+    # delete all the comments made by me
+    db.query(models.Comment).filter(models.Comment.commented_by == user_id).delete()
+    print("deleted all the comments made by me")
+    
+
+    # delete the user
+    user_to_delete=db.query(models.User).filter(models.User.id==user_id).first()
+
+   
     db.delete(user_to_delete)
+    print(6)
     db.commit()
     db.refresh(user_to_delete)
-    return user_to_delete
-    
-    
-    
-    
+    return {"User deleted successfully"}
     
