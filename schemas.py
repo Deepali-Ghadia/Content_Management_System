@@ -110,7 +110,7 @@ class ShowAllPost(BaseModel):
     id: int
     title: str
     description: str
-    # posted_on: datetime
+    posted_on: datetime
     is_featured: bool
     is_published: bool
     posted_by: int
@@ -194,6 +194,7 @@ class ShowComment(BaseModel):
     post_id : int
     description: str
     commenter: ShowUser
+    commented_on: datetime
     is_approved: bool
     
     class Config:
