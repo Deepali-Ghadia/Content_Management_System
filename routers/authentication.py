@@ -15,9 +15,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 10
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl= "login") # tokenUrl parameter to specify the URL where the client can obtain an access token.
 
 def create_access_token(data: dict):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
+    # to_encode = data.copy()
     encoded_jwt = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
@@ -27,6 +25,8 @@ def check_password(hashed_password, plain_password):
     return password_context.verify(plain_password, hashed_password)
    
    
+# The try block contains the code that is expected to raise an exception. If an exception is raised, it is caught by the except block, which specifies how to handle the exception. If there is no exception, the except block is skipped and the program continues to run normally.
+   
 
 def verify_token(token:str):
     try:
@@ -35,6 +35,8 @@ def verify_token(token:str):
         if username is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unable to validate credentials")
         token_data = schemas.TokenData(username=username)
+        
+        # JWTError is raised when a token is invalid
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unable to validate credentials") 
 
@@ -43,6 +45,8 @@ def verify_token(token:str):
     return user_id
     
 
+
+
 def get_current_user(token: str = Depends(oauth2_scheme)):
     print(verify_token(token))
     # returns user id
@@ -50,8 +54,9 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
   
     
 
-    
-
+  
+# OAuth2PasswordRequestForm class -> to extract and validate the user's credentials from the login.
+# It expects the client to submit the user's username and password in the body of the POST request in the form of application/x-www-form-urlencoded data (used in HTTP requests to send form data from a client to a server.)  
 @router.post('/login', tags=["Login"])
 def login(login: OAuth2PasswordRequestForm = Depends()):
     user = db.query(models.User).filter(models.User.username == login.username).first()
@@ -75,3 +80,9 @@ def login(login: OAuth2PasswordRequestForm = Depends()):
 
 # First part i.e before the first dot -> contains algorithm related info (HEADER)
 # second part contains payload i.e. actual data
+
+
+
+
+
+# When form data is submitted using application/x-www-form-urlencoded encoding, the data is encoded in a key-value format, with each key-value pair separated by an ampersand (&) character, and the key and value separated by an equals sign (=) character. Spaces are encoded as + characters, and other special characters are encoded using percent-encoding.
