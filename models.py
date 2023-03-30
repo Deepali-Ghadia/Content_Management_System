@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, DateTime, func
+from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, TIMESTAMP, text
 from sqlalchemy.orm import relationship
 
 class User(Base):
@@ -26,7 +26,7 @@ class Post(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=False)
-    # posted_on = Column(DateTime, default=func.now())
+    posted_on = Column(TIMESTAMP(timezone=True),nullable=False, server_default=text('now()'))
     is_featured = Column(Boolean, default=False)
     is_published = Column(Boolean, default=True)
     
@@ -63,6 +63,7 @@ class Comment(Base):
     id = Column(Integer, primary_key=True, index=True)
     description = Column(Text, nullable=False)
     is_approved = Column(Boolean, default=False)
+    commented_on = Column(TIMESTAMP(timezone=True),nullable=False, server_default=text('now()'))
     
     post_id = Column(Integer, ForeignKey("posts.id"))
     commented_by = Column(Integer, ForeignKey("users.id"))
