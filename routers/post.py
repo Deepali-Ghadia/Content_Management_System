@@ -71,9 +71,13 @@ def delete_an_post(id: int, user_id:int = Depends(get_current_user)):
     if post_to_delete is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Either the post does not exist or you are not the owner of this post")
     
+    
+    db.query(models.Comment).filter(models.Comment.post_id == id).delete()
+
     db.delete(post_to_delete)
     db.commit()
     db.refresh(post_to_delete)
+    
     return post_to_delete
 
 
@@ -102,3 +106,8 @@ def view_post_by_id(id: int, random: int = Depends(get_current_user) ):
         return post_by_id
 
 
+
+# @router.get('/comments', response_model = List[schemas.ShowComment], status_code=200)
+# def get_all_comments():
+#     comments = db.query(models.Comment).all()
+#     return comments
