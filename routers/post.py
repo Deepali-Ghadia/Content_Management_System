@@ -4,6 +4,7 @@ from passlib.context import CryptContext
 from typing import List
 import schemas, models
 from routers.authentication import get_current_user
+import sqlalchemy
 
 
 router = APIRouter(prefix="/posts")
@@ -25,11 +26,14 @@ def get_all_posts(random: int = Depends(get_current_user) ):
 # the ID returned by get_current_user is mapped with the id in the argument
 def create_post( post: schemas.CreatePost, id:int = Depends(get_current_user) ):
     
-    # media_owner = db.query(models.Media).filter(models.Media.user == id).first()
-    # if media_owner is None:
-    #     return {"message": "This media file does not belong to you ❌❌"}
+    # if media_id is 0 then,
+    if post.media_id == 0:
+        post.media_id = None
         
-    # else:  
+    # if category is 0 then,
+    if post.category == 0:
+        post.category = None
+        
     new_post = models.Post(
         title = post.title,
         description = post.description,
@@ -51,6 +55,15 @@ def update_an_post(post:schemas.UpdatePost, id: int, user_id:int = Depends(get_c
     
     if post_to_update is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You are not allowed to edit someone else's post")
+    
+    # if media_id is 0 then,
+    if post.media_id == 0:
+        post.media_id = None
+        
+    # if category is 0 then,
+    if post.category == 0:
+        post.category = None
+        
     post_to_update.title = post.title
     post_to_update.description = post.description
     post_to_update.is_published = post.is_published
@@ -72,13 +85,17 @@ def delete_an_post(id: int, user_id:int = Depends(get_current_user)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Either the post does not exist or you are not the owner of this post")
     
     
-    db.query(models.Comment).filter(models.Comment.post_id == id).delete()
+    try:
+        # firstly, delete all the comments made on the post
+        db.query(models.Comment).filter(models.Comment.post_id == id).delete()
 
-    db.delete(post_to_delete)
-    db.commit()
-    db.refresh(post_to_delete)
-    
-    return post_to_delete
+        # delete the post itself
+        db.delete(post_to_delete)
+        db.commit()
+        db.refresh(post_to_delete)
+        
+    except sqlalchemy.exc.InvalidRequestError:
+        raise HTTPException(status_code=status.HTTP_200_OK, detail="Post deleted successfully")
 
 
 
