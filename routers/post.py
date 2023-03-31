@@ -111,6 +111,7 @@ def get_all_my_posts(id:int = Depends(get_current_user)):
 def get_all_posts_of_a_user(id: int, random :int = Depends(get_current_user) ):
     if random is not None:
         posts = db.query(models.Post).filter((models.Post.posted_by == id) & (models.Post.is_published==True)).all()
+        
         return posts
 
 
@@ -120,6 +121,10 @@ def get_all_posts_of_a_user(id: int, random :int = Depends(get_current_user) ):
 def view_post_by_id(id: int, random: int = Depends(get_current_user) ):
     if random is not None:
         post_by_id = db.query(models.Post).filter(models.Post.id == id).first()
+        
+        if post_by_id is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post does not exist")
+        
         return post_by_id
 
 
