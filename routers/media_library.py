@@ -68,6 +68,12 @@ def delete_media_file(id: int, user_id:int = Depends(get_current_user)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Either the media file does not exist or you are not the owner of this media file")
     
     try:
+        # before deleting media file, make the media attributes of all the posts containing that media file as null
+        post_containing_media = db.query(models.Post).filter(models.Post.media_id == id).all()
+        
+        for i in range(len(post_containing_media)):
+            post_containing_media[0].media_id == None
+            
         db.delete(media_to_delete)
         db.commit()
         db.refresh(media_to_delete)
