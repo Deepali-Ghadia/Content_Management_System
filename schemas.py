@@ -38,7 +38,7 @@ class ShowPostByUser(BaseModel):
     is_featured: bool
     is_published: bool
     user: ShowUser # this is the relationship wala variable
-    media_id: int
+    media_id: Optional[int] = None
 
     
     class Config:
@@ -115,7 +115,7 @@ class ShowAllPost(BaseModel):
     is_published: bool
     posted_by: int
     user: ShowUser
-    category: ShowCategory
+    category: Optional[ShowCategory] = None
     media_id: Optional[int]= None
     
     class Config:
