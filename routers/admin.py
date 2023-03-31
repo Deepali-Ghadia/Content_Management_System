@@ -33,9 +33,10 @@ def mark_featured(id: int, is_admin: str = Depends(validate_admin)):
 
 # show all featured posts
 @router.get('/posts/show_featured/{value}', response_model=List[schemas.ShowFeaturedPosts], tags=["Posts"])
-def list_all_featured_posts(value: bool):
-    featured_posts = db.query(models.Post).filter(models.Post.is_featured==value).all()
-    return featured_posts
+def list_all_featured_posts(value: bool, random: int = Depends(get_current_user)):
+    if random is not None:
+        featured_posts = db.query(models.Post).filter(models.Post.is_featured==value).all()
+        return featured_posts
 
 
 
