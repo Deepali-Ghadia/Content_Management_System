@@ -5,6 +5,7 @@ from passlib.context import CryptContext
 from typing import List
 import schemas, models
 from routers.authentication import get_current_user
+import sqlalchemy
 
 router = APIRouter()
 
@@ -21,7 +22,7 @@ def show_all_media_files(id: int = Depends(get_current_user)):
 
 
 
-# upload a file and add it to local directory
+# upload a file, add it to local directory and add the file's metadata to the database 
 @router.post('/media_library', response_model=schemas.ShowMediaFile, tags=["Media Library"])
 def upload_file(file: UploadFile = File(...), id:int = Depends(get_current_user)):  
     
@@ -40,7 +41,7 @@ def upload_file(file: UploadFile = File(...), id:int = Depends(get_current_user)
     
     # # adding the locally stored file to the database
 
-    db_file = db.query(models.Media).filter(models.Media.link == destination_path).first()
+    db_file = db.query(models.Media).filter((models.Media.link == destination_path) & (models.Media.user == id)).first()
     if db_file is not None:
         raise HTTPException(status_code=400, detail="Media File already exists")
     
@@ -66,11 +67,14 @@ def delete_media_file(id: int, user_id:int = Depends(get_current_user)):
     if media_to_delete is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Either the media file does not exist or you are not the owner of this media file")
     
+    try:
+        db.delete(media_to_delete)
+        db.commit()
+        db.refresh(media_to_delete)
+        
+    except sqlalchemy.exc.InvalidRequestError:
+        raise HTTPException(status_code=status.HTTP_200_OK, detail="Media File deleted successfully")
     
-    db.delete(media_to_delete)
-    db.commit()
-    db.refresh(media_to_delete)
-    return media_to_delete
     
     
     
