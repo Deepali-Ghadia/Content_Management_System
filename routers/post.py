@@ -31,8 +31,8 @@ def create_post( post: schemas.CreatePost, id:int = Depends(get_current_user) ):
         post.media_id = None
         
     # if category is 0 then,
-    if post.category == 0:
-        post.category = None
+    if post.post_category == 0:
+        post.post_category = None
         
     new_post = models.Post(
         title = post.title,
@@ -101,7 +101,7 @@ def delete_an_post(id: int, user_id:int = Depends(get_current_user)):
 
 # show all my posts
 @router.get('/user', response_model=List[schemas.ShowPostByUser], tags=['Posts'])
-def get_all_my_posts(id:int = Depends(get_current_user) ):
+def get_all_my_posts(id:int = Depends(get_current_user)):
     posts = db.query(models.Post).filter(models.Post.posted_by == id).all()
     return posts
 
