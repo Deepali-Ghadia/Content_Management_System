@@ -72,7 +72,7 @@ def delete_media_file(id: int, user_id:int = Depends(get_current_user)):
         post_containing_media = db.query(models.Post).filter(models.Post.media_id == id).all()
         
         for i in range(len(post_containing_media)):
-            post_containing_media[0].media_id == None
+            post_containing_media[i].media_id == None
             
         db.delete(media_to_delete)
         db.commit()
