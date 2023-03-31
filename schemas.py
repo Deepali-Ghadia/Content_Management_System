@@ -74,7 +74,7 @@ class UserResponse(BaseModel):
     mobile_number: str
     email_id: str
     role: str
-    posts: List
+    posts: Optional[List] = None
     profile_photo: Optional[int] = None
     bio: Optional[str] = None
     password: str
@@ -144,7 +144,7 @@ class ShowPost(BaseModel):
     is_published: bool
     posted_by: int
     user: ShowUser
-    category: ShowCategory
+    category: Optional[ShowCategory] = None
     comments: List
     media_id: Optional[int]= None
     
