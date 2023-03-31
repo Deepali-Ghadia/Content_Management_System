@@ -41,6 +41,10 @@ def verify_token(token:str):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unable to validate credentials") 
 
     user = db.query(models.User).filter(models.User.username == username).first()
+    
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = "Please refresh and login again")
+    
     user_id = user.id
     return user_id
     
