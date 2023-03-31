@@ -18,8 +18,8 @@ def get_all_posts(random: int = Depends(get_current_user) ):
     if random is not None:
         posts = db.query(models.Post).filter(models.Post.is_published==True).all()
         return posts
-
-
+    
+    
 
 # create a post 
 @router.post('/create/', response_model=schemas.ShowAllPost, status_code=status.HTTP_201_CREATED,tags=['Posts'])
@@ -100,7 +100,7 @@ def delete_an_post(id: int, user_id:int = Depends(get_current_user)):
 
 
 # show all my posts
-@router.get('/user', response_model=List[schemas.ShowPostByUser], tags=['Posts'])
+@router.get('/user/my_posts', response_model=List[schemas.ShowPostByUser], tags=['Posts'])
 def get_all_my_posts(id:int = Depends(get_current_user)):
     posts = db.query(models.Post).filter(models.Post.posted_by == id).all()
     return posts
