@@ -4,6 +4,7 @@ from passlib.context import CryptContext
 from typing import List
 import schemas, models
 from routers.authentication import get_current_user
+import sqlalchemy
 
 
 router = APIRouter(prefix="/comments",
@@ -38,7 +39,12 @@ def delete_comment_by_id(id: int, user_id:int = Depends(get_current_user)):
     if comment_to_delete is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Either the comment does not exist or you are not allowed to delete this comment")
     
-    db.delete(comment_to_delete)
-    db.commit()
-    db.refresh(comment_to_delete)
-    return comment_to_delete
+    
+    try:
+        db.delete(comment_to_delete)
+        db.commit()
+        db.refresh(comment_to_delete)
+        
+    except sqlalchemy.exc.InvalidRequestError:
+        raise HTTPException(status_code=status.HTTP_200_OK, detail="Comment is deleted successfully")
+    
