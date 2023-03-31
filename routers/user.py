@@ -52,7 +52,7 @@ def update_user(user: schemas.UpdateUser, user_id: int = Depends(get_current_use
 def delete_an_user(user_id: int = Depends(get_current_user)):
     
     # delete all my posts and comments made by all the users on my post
-    posts_of_a_user = db.query(models.Post).filter(models.Post.posted_by == user_id).all()
+
     # print(posts_of_a_user) # prints a list of all the posts made by a user
     # print(posts_of_a_user[0]) #prints the first post from the list
     # print(posts_of_a_user[0].id) #prints the id of first post
@@ -61,10 +61,11 @@ def delete_an_user(user_id: int = Depends(get_current_user)):
  
         
     try:
+        posts_of_a_user = db.query(models.Post).filter(models.Post.posted_by == user_id).all()
         for i in range(len(posts_of_a_user)):
             for j in range(len(posts_of_a_user[i].comments)):
                 db.delete(posts_of_a_user[i].comments[j])
-        db.delete(posts_of_a_user[i])
+            db.delete(posts_of_a_user[i])
 
         print("Deleted all the posts along with comments")
     
@@ -79,7 +80,6 @@ def delete_an_user(user_id: int = Depends(get_current_user)):
 
     
         db.delete(user_to_delete)
-        print(6)
         db.commit()
         db.refresh(user_to_delete)
         
