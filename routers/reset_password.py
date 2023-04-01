@@ -9,7 +9,6 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from database import db
 import smtplib
-from email.mime.text import MIMEText
 import schemas, models
 from routers.authentication import create_access_token
 from jose import jwt, JWTError
