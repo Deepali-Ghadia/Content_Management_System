@@ -1,7 +1,6 @@
 import os, shutil
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, status
 from database import db
-from passlib.context import CryptContext
 from typing import List
 import schemas, models
 from routers.authentication import get_current_user
