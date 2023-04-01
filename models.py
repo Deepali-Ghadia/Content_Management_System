@@ -14,6 +14,7 @@ class User(Base):
     bio = Column(Text, nullable=True)
     
     profile_photo = Column(Integer, ForeignKey("media_files.id"))
+    # To specify multiple foreign keys, we use the foreign_keys parameter
     profile = relationship("Media", foreign_keys=[profile_photo])
     
     posts = relationship("Post", back_populates="user")
