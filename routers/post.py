@@ -1,6 +1,5 @@
 from fastapi import APIRouter, status, HTTPException, Depends
 from database import db
-from passlib.context import CryptContext
 from typing import List
 import schemas, models
 from routers.authentication import get_current_user
