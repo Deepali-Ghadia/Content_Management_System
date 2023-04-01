@@ -3,7 +3,6 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from database import db
 import schemas, models
 from routers.register import password_context
-from datetime import datetime, timedelta
 from jose import jwt, JWTError
 router = APIRouter()
 
